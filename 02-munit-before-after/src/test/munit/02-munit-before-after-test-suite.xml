@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="02-munit-before-after-test-suite.xml" />
+	<munit:before-suite name="beforeTestSuite" doc:id="9fe118ba-b2b3-4cc5-995f-78d546efdadf" >
+		<logger level="INFO" doc:name="Log BEFORE TEST SUITE" doc:id="7ba7baf2-447d-418e-b05e-56f81bca9124" message='#["Log BEFORE TEST SUITE"]'/>
+	</munit:before-suite>
+	<munit:after-suite name="afterTestSuite" doc:id="95125c5e-160e-47dc-b1aa-fc3bbe39ab45" >
+		<logger level="INFO" doc:name="Log AFTER TEST SUITE" doc:id="203f8d8b-b444-4103-a81d-f5ed25f50708" message='#["Log AFTER TEST SUITE"]'/>
+	</munit:after-suite>
+	<munit:before-test name="Before_Test" doc:id="2cbbb11b-5735-4ac2-8051-2bf656bb68fe" >
+		<logger level="INFO" doc:name="Logger" doc:id="289b7216-7177-4c31-b961-3008fbb6c113" message='#["BBBBBEEEEFOOOOORE TEST!!!!!!!!!!!!!!!!!!!"]'/>
+	</munit:before-test>
+	<munit:after-test name="After_Test" doc:id="d631f43a-ea8e-45a9-bd8d-07ce84511cbb" >
+		<logger level="INFO" doc:name="Logger" doc:id="61dd9003-6714-47f2-827d-f9e8f1024cba" message='#["AFTEEEEEEEER TEST!!!!!!!!!!!!!!!!!!!"]'/>
+	</munit:after-test>
+	<munit:test name="validateFeeGreaterThan0TestCase" doc:id="0acfa9c4-605e-4770-abf1-0304c0d8a1a1" description="Test">
+		<munit:behavior >
+			<set-payload value='#[{&#10;    "name": "Armin Dz",&#10;    "age": 37,&#10;    "hospital": "Cedars Sinai",&#10;    "category": "neurology",&#10;    "availability": "9:00 a.m. - 11:00 a.m.",&#10;    "fee": "1230"&#10;}]' doc:name="Set Payload" doc:id="01a65193-b66b-454e-947d-93fe6944fa71" />
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to getMedicalAppointment" doc:id="f359ac4d-328c-4505-8c10-61130a69618f" name="getMedicalAppointment"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that fee &gt; 0" doc:id="c23cf7ad-fc31-4315-86eb-8b21a42d4ebe" is="#[MunitTools::greaterThan(0)]" expression="#[payload.fee]"/>
+			<logger level="INFO" doc:name="Logger" doc:id="53390202-ccc3-4b12-bdbb-512e1304c5c1" message="#[payload.fee]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="validatePayloadNotNullTestCase" doc:id="761588ff-3c7f-473a-9a65-594e3d8337d9" >
+		<munit:behavior>
+			<set-payload value='#[{&#10;    "name": "Armin Dz",&#10;    "age": 37,&#10;    "hospital": "Cedars Sinai",&#10;    "category": "neurology",&#10;    "availability": "9:00 a.m. - 11:00 a.m.",&#10;    "fee": "1230"&#10;}]' doc:name="Set Payload" doc:id="788af57b-722e-420e-b2c7-bee31fbb94bc" />
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to getMedicalAppointment" doc:id="785255de-a6dd-43c5-b3e7-cfa8c05f878a" name="getMedicalAppointment"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that payload is not null" doc:id="6a1fe696-ad32-4e61-9b4a-fde8068ccfe9" is="#[MunitTools::notNullValue()]" expression="#[payload]" message='#["payload is null :("]'/>
+			<logger level="INFO" doc:name="Log validatePayloadNotNullTestCase" doc:id="56eda102-1970-4ec9-ac2d-3b76effa0b98" message="#[payload]"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>
