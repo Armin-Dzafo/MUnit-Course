@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="04-munit-assert-test-suite.xml" />
+	<munit:test name="payloadContainsMulesoftSuccessTestCase" doc:id="1498f27f-5828-4b5a-b783-ecd6ae1d4f8f" description="Test">
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to getArray" doc:id="c873ac16-5f28-4275-adc0-436dfad46c5d" name="getArray"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that Mulesoft string exists" doc:id="03ef28bb-c7ca-49b8-bdb7-5439fc0cd54f" message='#["Element does not exist in array"]' expression="#[payload]" is='#[MunitTools::hasItem("Mulesoft")]'/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="payloadContainsKiflaFailTestCase" doc:id="a1da7008-735e-457d-af8e-ba9b9517cc07" expectedErrorDescription='Error 888'>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to getArray" doc:id="35d828ed-77ca-4d09-9895-995bb5093e57" name="getArray"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that Kifla does exist" doc:id="307346b1-9aa1-4c24-9548-9ac504afd392" message='#["Error 888"]' expression="#[payload]" is='#[MunitTools::hasItem("Kifla")]'/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

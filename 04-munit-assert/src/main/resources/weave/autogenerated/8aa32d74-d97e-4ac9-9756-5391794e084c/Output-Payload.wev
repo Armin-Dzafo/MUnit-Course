@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_8aa32d74_d97e_4ac9_9756_5391794e084c_Output_Payload = Array<"Mulesoft" | "Cristiano Ronaldo" | "Jimi Hendrix" | "Nelson Mandela" | "Elon Gates">
+

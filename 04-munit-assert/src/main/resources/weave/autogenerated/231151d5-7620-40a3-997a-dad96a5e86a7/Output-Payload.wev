@@ -1,0 +1,10 @@
+%dw 2.0
+
+type auto_231151d5_7620_40a3_997a_dad96a5e86a7_Output_Payload = {|
+  name: String, 
+  hospital: String, 
+  category: String, 
+  availability: String, 
+  fee: String
+|}
+
