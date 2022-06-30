@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="03-munit-parameterized-test-suites-test-suite.xml" >
+		<munit:parameterizations >
+			<munit:parameterization name="dev" >
+				<munit:parameters >
+					<munit:parameter propertyName="firstName" value="${firstName}" />
+					<munit:parameter propertyName="lastName" value="${lastName}" />
+					<munit:parameter propertyName="fullName" value="Nelson Mandela" />
+					<munit:parameter propertyName="parameterization" value="dev" />
+				</munit:parameters>
+			</munit:parameterization>
+			<munit:parameterization name="tst" >
+				<munit:parameters >
+					<munit:parameter propertyName="firstName" value="${firstName}" />
+					<munit:parameter propertyName="lastName" value="${lastName}" />
+					<munit:parameter propertyName="fullName" value="Elon Gates" />
+					<munit:parameter propertyName="parameterization" value="tst" />
+				</munit:parameters>
+			</munit:parameterization>
+			<munit:parameterization name="acc" >
+				<munit:parameters >
+					<munit:parameter propertyName="firstName" value="${firstName}" />
+					<munit:parameter propertyName="lastName" value="${lastName}" />
+					<munit:parameter propertyName="fullName" value="Jimi Hendrix" />
+					<munit:parameter propertyName="parameterization" value="acc" />
+				</munit:parameters>
+			</munit:parameterization>
+			<munit:parameterization name="smrd" >
+				<munit:parameters >
+					<munit:parameter propertyName="firstName" value="${firstName}" />
+					<munit:parameter propertyName="lastName" value="${lastName}" />
+					<munit:parameter propertyName="fullName" value="Tihomir Prdavac" />
+					<munit:parameter propertyName="parameterization" value="smrd" />
+				</munit:parameters>
+			</munit:parameterization>
+			<munit:parameterization name="cr7" >
+				<munit:parameters >
+					<munit:parameter propertyName="firstName" value="${firstName}" />
+					<munit:parameter propertyName="lastName" value="${lastName}" />
+					<munit:parameter propertyName="fullName" value="Cristiano Ronaldo" />
+					<munit:parameter propertyName="parameterization" value="cr7" />
+				</munit:parameters>
+			</munit:parameterization>
+		</munit:parameterizations>
+	</munit:config>
+	<munit:test name="validateFullNameTestCase" doc:id="da8afe52-9066-4771-961a-57f2ddad4672" description="Test">
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to createFullName" doc:id="f5d4d74c-2ed6-4772-8047-f04281e0e6d6" name="createFullName"/>
+		</munit:execution>
+		<munit:validation >
+			<logger level="INFO" doc:name="Log Parameter" doc:id="e7fa8f4d-2230-47d8-b3b0-992bc0f46e27" message='#[%dw 2.0&#10;&#10;output application/json&#10;---&#10;{&#10;	"firstName": Mule::p("firstName"),&#10;	"lastName": Mule::p("lastName"),&#10;	"fullName": Mule::p("fullName"),&#10;	"environment_parameter": Mule::p("parameterization")&#10;}]'/>
+			<munit-tools:assert-equals doc:name="Assert equals fullName" doc:id="a91b3184-95db-4642-96e2-fc66aa8abe79" actual="#[payload.fullName]" expected='#[Mule::p("fullName")]' message='#["INVALID! Full name does not match!"]'/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>
