@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<flow name="createClientInZenica" doc:id="3a5f38b7-be0a-49c3-94ec-2f131a28b602" >
+		<http:listener doc:name="POST /create-client" doc:id="b64d1de6-2608-4f76-9e8e-d19e0ae44311" config-ref="HTTP_Listener_config" path="/create-client" allowedMethods="POST"/>
+		<logger level="INFO" doc:name="Log START" doc:id="98655637-1b6d-4772-bc8e-5784f115d38c" message='#["Log START"]'/>
+		<flow-ref doc:name="Flow Reference validateLocation" doc:id="53309183-ca0f-42ed-a8d0-5d6a71834ba5" name="validateLocation"/>
+		<flow-ref doc:name="Flow Reference generateClientUUID" doc:id="9a604de2-3d60-4c4f-a1b6-7d7146c28b08" name="generateClientUUID"/>
+		<set-payload value="#[%dw 2.0&#10;output application/json&#10;---&#10;vars.clientUUID]" doc:name="Set Payload clientUUID" doc:id="54992c54-8170-4a40-a9e0-8aa7130b7a91" />
+		<logger level="INFO" doc:name="Log END" doc:id="d9895b12-3ed8-4a5b-aca8-01c669b7ec15" message='#["Log END"]' />
+	</flow>
+	<sub-flow name="validateLocation" doc:id="5fb6f294-8b84-4806-9c4f-5668fd6c6aad" >
+		<choice doc:name="Choice" doc:id="8d963064-4fb3-49e8-b731-46738b27b3ba" >
+			<when expression='#[payload.location == "Zenica"]'>
+				<set-variable value="#[true]" doc:name="Set Variable validateClient TRUE" doc:id="0aa63d7e-f18d-4e44-80a6-cd17f84f66ef" variableName="validateClient"/>
+			</when>
+			<otherwise >
+				<set-variable value="#[false]" doc:name="Set Variable validateClient FALSE" doc:id="8b32968c-2942-4047-b4b0-468dd69ded04" variableName="validateClient"/>
+			</otherwise>
+		</choice>
+	</sub-flow>
+	<sub-flow name="generateClientUUID" doc:id="e2c0c330-05f1-4275-88c4-7dcbd6b8889a" >
+		<logger level="INFO" doc:name="Log vars.validateClient" doc:id="116bb7ef-7b6f-408b-9b57-15c5426d42b6" message="#[vars.validateClient]"/>
+		<choice doc:name="Choice" doc:id="49718d5a-6a1c-4e69-b223-87b87fb16a0d" >
+			<when expression="#[vars.validateClient == true]">
+				<set-variable value="#[%dw 2.0&#10;output application/json&#10;---&#10;uuid()]" doc:name="Set Variable clientUUID" doc:id="9e6316cd-facf-442a-8efc-6be98600653d" variableName="clientUUID"/>
+			</when>
+			<otherwise>
+				<raise-error doc:name="Raise error" doc:id="8dd78d09-9a10-4f55-9dde-9dbf366a249e" type="CLIENT:INVALID_DATA" description='"INVALID CLIENT LOCATION"'/>
+			</otherwise>
+		</choice>
+	</sub-flow>
+</mule>

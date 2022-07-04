@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="06-munit-set-event-test-suite.xml" />
+	<munit:test name="clientLocationValidationFailTestCase" doc:id="f8f811bb-b79b-4c99-b01e-4da74c353f02" description="Test">
+		<munit:execution >
+			<munit:set-event doc:name='Set Event payload with location "Sarajevo"' doc:id="2ea35b4f-aad3-4c1b-a2bd-d196c54237de" >
+				<munit:payload value='#[&#10;{&#10;    "name": "jim",&#10;    "email": "jim@gmail.com",&#10;    "hospital": "Insel",&#10;    "age": "27",&#10;    "location": "Sarajevo",&#10;    "category": "cardiology"&#10;}&#10;]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to validateLocation" doc:id="9ec102a6-bf08-440e-8f95-732313eb5384" name="validateLocation"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that - vars.ValidateClient is FALSE" doc:id="68fc51fe-339a-4b1f-8ebf-363828db5c46" is="#[MunitTools::equalTo(false)]" expression="#[vars.validateClient]" message='#["validateClient value is FALSE"]'/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="clientLocationValidationSuccessTestCase" doc:id="cc4edb35-dbb4-47c4-9646-0f6482321d4c" >
+		<munit:execution >
+			<munit:set-event doc:name='Set Event payload with location "Zenica"' doc:id="ad5c4e36-9edf-4a0b-8ecb-2b6b5c095fd2" >
+				<munit:payload value='#[&#10;{&#10;    "name": "jim",&#10;    "email": "jim@gmail.com",&#10;    "hospital": "Insel",&#10;    "age": "27",&#10;    "location": "Zenica",&#10;    "category": "cardiology"&#10;}&#10;]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to validateLocation" doc:id="6bd3ec24-7c3e-4f5f-bfea-d87963e4f4df" name="validateLocation"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that vars.validateClient is TRUE" doc:id="be52be9f-40f5-411a-9b00-534aa0b25aaf" message='#["vars.validateClient is TRUE"]' expression="#[vars.validateClient]" is="#[MunitTools::equalTo(true)]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="generateClientUUIDFailTestCase" doc:id="ced966c6-0bd5-42b9-91f5-22f9a65edede" expectedErrorDescription='"INVALID CLIENT LOCATION"'>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event vars.validateClient is FALSE" doc:id="557aad6d-751a-4281-8328-ab2ed2056be2" >
+				<munit:variables >
+					<munit:variable key="validateClient" value="#[false]" />
+				</munit:variables>
+			</munit:set-event>
+			<flow-ref doc:name="Flow Reference generateClientUUID" doc:id="337320df-bc6a-40f5-9e95-f93dcf915cb3" name="generateClientUUID"/>
+		</munit:execution>
+		<munit:validation >
+			<logger level="INFO" doc:name="Log clientUUID" doc:id="9900a8a1-ddd9-40fc-af69-ad3c9dce9fa4" message="#[vars.clientUUID]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="generateClientUUIDSuccessTestCase" doc:id="16e9ef05-c772-4c6d-b379-0597c4cb94d3" >
+		<munit:execution >
+			<munit:set-event doc:name="Set Event vars.validateClient is TRUE" doc:id="b40df09b-220d-41ff-9bbb-0900d9bd1938" >
+				<munit:variables >
+					<munit:variable key="validateClient" value="#[true]" />
+				</munit:variables>
+			</munit:set-event>
+			<flow-ref doc:name="Flow Reference generateClientUUID" doc:id="c380cb1f-d3e4-43d0-8a6b-e1c56dff52b8" name="generateClientUUID"/>
+		</munit:execution>
+		<munit:validation >
+			<logger level="INFO" doc:name="Log vars.clientUUID" doc:id="476ca68d-8e54-4aa8-a5ce-28dc4580835b" message="#[vars.clientUUID]"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>
