@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<munit:config name="08-munit-testing-http-listeners-test-suite.xml" />
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="7eab9a2f-4aa2-4767-a8e1-2a24d0cd3b0b" >
+		<http:request-connection host="localhost" port="8081" />
+	</http:request-config>
+	<munit:test name="httpGETRequestSuccessTestCase" doc:id="01ca7a9a-f2e0-47db-a2bd-6927828a3b8b" description="Test">
+		<munit:enable-flow-sources >
+			<munit:enable-flow-source value="getUser" />
+		</munit:enable-flow-sources>
+		<munit:execution >
+			<http:request method="GET" doc:name="Request HTTP GET" doc:id="32c9731f-3973-4439-b1c3-faaef133525e" config-ref="HTTP_Request_configuration" path="/get-users"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that payload is of mimetype JSON" doc:id="49c7ad33-daaf-4a47-aff5-84bf2dbd4059" is='#[MunitTools::withMediaType("application/json")]' expression="#[payload]"/>
+			<munit-tools:assert-that doc:name="Assert that payload.firstName is Jim" doc:id="7da611e2-eaee-4cf1-9a70-9efde2f6fa92" expression="#[payload.firstName]" is='#[MunitTools::equalTo("jim")]'/>
+			<munit-tools:assert-that doc:name="Assert that payload.lastName is Morrison" doc:id="aa1cc99b-c837-48f6-bb4c-23cffdb9b8ca" expression="#[payload.lastName]" is='#[MunitTools::equalTo("morrison")]'/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="httpPOSTRequestSuccessTestCase" doc:id="97dcf7dc-fe9a-4bb4-9549-1e10dece39a9" >
+		<munit:enable-flow-sources >
+			<munit:enable-flow-source value="createNewUser" />
+		</munit:enable-flow-sources>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event payload with new user data" doc:id="ddcdc0da-cce7-4ad1-a4d0-97087e9a1086" >
+				<munit:payload value='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;    "firstName": "jim",&#10;    "lastName": "morrison",&#10;    "yearOfBirth": "2002",&#10;    "location": "los angeles",&#10;    "profession": "singer"&#10;}&#10;]' />
+			</munit:set-event>
+			<http:request method="POST" doc:name="Request HTTP POST" doc:id="446ef977-16b3-48b6-9081-e40ebfa16461" config-ref="HTTP_Request_configuration" path="/create-new-user"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that request response in OK" doc:id="dd00e0ed-a49e-4ebf-b839-ab50556ac38e" expression="#[payload]" is='#[MunitTools::containsString("Registration successful")]'/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="httpPOSTRequestFailTestCase" doc:id="efa60d14-4b0a-4e23-b653-e46bced31b6c" >
+		<munit:enable-flow-sources >
+			<munit:enable-flow-source value="createNewUser" />
+		</munit:enable-flow-sources>
+		<munit:execution>
+			<munit:set-event doc:name="Set Event payload with new user data" doc:id="71ebdff2-bd2d-4d3a-ac92-c20746698df1" >
+				<munit:payload value='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;    "firstName": "jim",&#10;    "lastName": "morrison",&#10;    "yearOfBirth": "2021",&#10;    "location": "los angeles",&#10;    "profession": "singer"&#10;}&#10;]' />
+			</munit:set-event>
+			<http:request method="POST" doc:name="Request HTTP POST" doc:id="b4135ab1-0cc4-4351-a024-de341f9126e6" config-ref="HTTP_Request_configuration" path="/create-new-user" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that request response in not OK" doc:id="be802a05-bcb2-4feb-86b0-461cc6440684" expression="#[payload]" is='#[MunitTools::containsString("only adults allowed")]' />
+		</munit:validation>
+	</munit:test>
+
+
+</mule>
