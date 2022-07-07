@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:dbserver="http://www.mulesoft.org/schema/mule/dbserver"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/dbserver http://www.mulesoft.org/schema/mule/dbserver/current/mule-dbserver.xsd">
+	<munit:config name="11-munit-db-server-4.4.0-test-suite.xml" />
+	<configuration-properties doc:name="Configuration properties" doc:id="d027c667-90a5-4449-872d-89544a8a295e" file="db.properties" />
+	<db:config name="TEST_Database_MariaDB_Config" doc:name="Database Config" doc:id="97dbf6fb-8221-4014-8fdc-fcde33929b7d" >
+		<db:generic-connection url="jdbc:h2:tcp://localhost/mem:munit_course" driverClassName="org.h2.Driver" />
+	</db:config>
+	<dbserver:config name="MUnit_DB_Server_Config" doc:name="MUnit DB Server Config" doc:id="6aa10a26-c245-490b-b7db-3501838d2270" >
+		<dbserver:connection csv="employees.csv" database="munit_course" />
+	</dbserver:config>
+	<munit:test name="getEmployeeJobTitleSuccessTestCase" doc:id="a1dff163-274b-4617-ade8-7a4fbb537289" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when jobID is GLU" doc:id="8a9f8aa1-2dfe-4f7a-be79-032b95fc63a9" processor="set-variable">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Set Variable jobID" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="jobID" value='#["GLU"]' />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to getEmployeeJobTitle" doc:id="e1a2efa9-47e4-44c1-8346-3542adf63133" name="getEmployeeJobTitle"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name='Assert that Job Title is "Glumica"' doc:id="54ed25e9-eb1b-4497-95ba-682da347d599" is='#[MunitTools::equalTo("Glumica")]' expression="#[payload]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="getEmployeeJobTitleFailTestCase" doc:id="1c1e0dd3-caaf-4a13-9fdf-652ae27ea7a4" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when jobID is null" doc:id="4dd0896d-9825-4ccd-b39d-8949f4c00256" processor="set-variable">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Set Variable jobID" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="jobID" value="#[null]" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			
+</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to getEmployeeJobTitle" doc:id="09b723c6-7acd-447d-9638-1c11a97d385a" name="getEmployeeJobTitle"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name='Assert that Job Title is "No Job Title was found"' doc:id="6b86fa82-a81e-4101-8c64-ff3cc6e2e706" is='#[MunitTools::equalTo("No Job Title was found")]' expression="#[payload]"/>
+		</munit:validation>
+	</munit:test>
+
+</mule>
